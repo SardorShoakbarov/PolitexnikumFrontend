@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E kitoblar</title>
+    <link rel="stylesheet" href="./css/news.css">
+    <link rel="icon" type="image/png" href="media/logo/logo.png">
+    <link rel="manifest" href="static/assets/img/favicons/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="media/logo/logo.png">
+    <meta name="theme-color" content="#ffffff">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!--==============================
+	  Google Fonts
+	============================== -->
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,700&family=Roboto:wght@300;400;500;700;900&display=swap"
+        rel="stylesheet">
+
+    <!--==============================
+	    All CSS File
+	============================== -->
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!-- Fontawesome Icon -->
+    <link rel="stylesheet" href="css/fontawesome.min.css">
+    <!-- Magnific Popup -->
+    <link rel="stylesheet" href="css/magnific-popup.min.css">
+    <!-- Slick Slider -->
+    <link rel="stylesheet" href="css/slick.min.css">
+    <!-- Theme Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        .book-card {
+            border-radius: 10px;
+            margin: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background-color: #fff;
+        }
+
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .book-card .card-img-topBook {
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .book-card .card-body {
+            padding: 15px;
+        }
+
+        .pagination li a {
+            font-size: 20px;
+        }
+
+        @media(max-width:768px) {
+            .pagination li a {
+                font-size: 2.5vmax;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+    <div class="preloader ">
+        <div class="preloader-inner">
+            <div style="position: relative;">
+                <img src="./images/giphy.gif" width="300px" alt="preloader">
+                <span class="loader" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; margin: auto;">
+
+                </span>
+            </div>
+        </div>
+    </div>
+    <!--==============================
+    Sidemenu
+============================== -->
+
+
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <img src="images/logtip.jpg" width="80" alt="Logo">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="./index.html">Bosh sahifa</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./events.html">Yangiliklar</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./tuzilma.pdf">Tuzilma</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./gallery.html">Galereya</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./books.html">Ebook</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./contact.html">Bog'lanish</a>
+                    </li>
+                    <li class="nav-item">
+                        <button class=" oqilabutton btn-primary">
+                            <a class="nav-link text-white" href="./OqilaAI.html">
+                                OQILA <i class="fa-solid fa-robot"></i>
+                            </a>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Kitoblar Roʻyxati</h1>
+        <div id="books-container" class="row"></div>
+
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item"><a class="page-link" href="#" onclick="scrapeBooks(0)">1</a></li>
+                <li class="page-item"><a class="page-link" href="#" onclick="scrapeBooks(1)">2</a></li>
+                <li class="page-item"><a class="page-link" href="#" onclick="scrapeBooks(2)">3</a></li>
+                <li class="page-item"><a class="page-link" href="#" onclick="scrapeBooks(3)">4</a></li>
+                <li class="page-item"><a class="page-link" href="#" onclick="scrapeBooks(4)">5</a></li>
+
+            </ul>
+        </nav>
+    </div>
+
+    <script>
+        const proxyURL = 'https://api.allorigins.win/raw?url=';
+        const baseTargetURL = 'https://mykitob.uz';
+        const pages = ['', '/page/2/', '/page/3/','/page/4/','/page/5/'];
+
+        async function scrapeBooks(pageIndex) {
+            const booksContainer = document.getElementById("books-container");
+            booksContainer.innerHTML = "<p class='text-center'>Yuklanmoqda...</p>";
+            let books = [];
+            try {
+                const targetURL = baseTargetURL + pages[pageIndex];
+                const response = await fetch(proxyURL + encodeURIComponent(targetURL));
+                const html = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, "text/html");
+
+                const bookElements = doc.querySelectorAll('.bs-blog-post');
+                let bookPromises = [];
+
+                for (const element of bookElements) {
+                    const title = element.querySelector('.title a')?.innerText.trim() || "Noma'lum";
+                    const author = element.querySelector('.book_author a')?.innerText.trim() || "Noma'lum";
+                    const bgImageStyle = element.querySelector('.bs-blog-thumb')?.style.backgroundImage;
+                    const imgSrc = bgImageStyle ? bgImageStyle.match(/url\(["']?(.*?)["']?\)/)[1] : "https://via.placeholder.com/150";
+                    const bookLink = element.querySelector('.title a')?.getAttribute('href');
+                    const fullBookLink = bookLink ? new URL(bookLink, baseTargetURL).href : "#";
+
+                    let bookData = { title, author, imgSrc, fullBookLink, downloadLink: "No download link" };
+
+                    if (fullBookLink !== "#") {
+                        bookPromises.push(fetchDownloadLink(fullBookLink).then(downloadLink => {
+                            bookData.downloadLink = downloadLink;
+                            return bookData;
+                        }));
+                    } else {
+                        books.push(bookData);
+                    }
+                }
+
+                const fetchedBooks = await Promise.all(bookPromises);
+                books = books.concat(fetchedBooks);
+                displayBooks(books);
+
+            } catch (error) {
+                console.error('Xatolik yuz berdi:', error);
+                booksContainer.innerHTML = "<p class='text-danger text-center'>Xatolik yuz berdi</p>";
+            }
+        }
+
+        async function fetchDownloadLink(bookURL) {
+            try {
+                const response = await fetch(proxyURL + encodeURIComponent(bookURL));
+                const html = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, "text/html");
+                const linkElement = doc.querySelector('.book_download a');
+                return linkElement ? linkElement.getAttribute('href') : "No download link";
+            } catch (error) {
+                console.error('Download sahifasida xatolik yuz berdi:', error);
+                return "No download link";
+            }
+        }
+
+        function displayBooks(books) {
+            const booksContainer = document.getElementById("books-container");
+            booksContainer.innerHTML = "";
+            books.forEach(book => {
+                booksContainer.innerHTML += `
+                    <div class="col-md-4 mb-4">
+                        <div class="card book-card h-100">
+                            <img src="${book.imgSrc}" class="card-img-topBook" alt="Kitob rasmi">
+                            <div class="card-body">
+                                <h5 class="card-title">${book.title}</h5>
+                                <p class="card-text">Muallif: ${book.author}</p>
+                                <a href="${book.downloadLink}" class="btn btn-primary" target="_blank">Yuklab olish</a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // Sahifani yuklaganda birinchi sahifani ko‘rsatish
+        scrapeBooks(0);
+    </script>
+    <footer class="footer-wrapper footer-layout2" data-bg-src="static/assets/img/bg/footer_bg_1.jpg">
+        <div class="widget-area">
+            <div class="container">
+                <div class="row justify-content-between">
+                    <div class="col-md-6 col-xxl-3 col-xl-4">
+                        <div class="widget footer-widget">
+                            <div class="as-widget-about">
+                                <div class="about-logo">
+                                    <a href="home-startup-company.html"><img src="./main img/logo.jpg" width="80"
+                                            alt="Traga"></a>
+                                </div>
+                                <p class="about-text">Biz bilan kasblarni birga o'rganing</p>
+                                <div class="as-social">
+
+
+                                    <a href="https://t.me/boyovut1khmyoshlari_yi"><i
+                                            class="fa-brands fa-telegram"></i></a>
+
+                                    <a href="https://www.instagram.com/shunqor_701_k2"><i
+                                            class="fa-brands fa-instagram"></i></a>
+
+                                    <a href="https://www.youtube.com/@shunqor701"><i
+                                            class="fa-brands fa-youtube"></i></a>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-xl-auto">
+                        <div class="widget widget_nav_menu footer-widget">
+                            <h3 class="widget_title">TEZKOR HAVOLALAR</h3>
+                            <div class="menu-all-pages-container">
+                                <ul class="menu">
+                                    <li><a href="./index.html">Biz haqimizda</a></li>
+                                    <li><a href="./events.html">Yangiliklar</a></li>
+                                    <li><a href="./gallery.html">Rasmli galereya</a></li>
+                                    <li><a href="./contact.html">Bog'lanish</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-xl-auto">
+                        <div class="widget footer-widget">
+                            <h3 class="widget_title">Bog'lanish</h3>
+                            <div class="as-widget-contact">
+                                <div class="contact-feature">
+                                    <div class="icon-btn">
+                                        <i class="fa-solid fa-phone"></i>
+                                    </div>
+                                    <div class="media-body">
+                                        <p class="contact-feature_label">Telefon raqam</p>
+                                        <a href="tel:0(365) 221-29-14" class="contact-feature_link">+998 (99) 468 27
+                                            76</a>
+                                    </div>
+                                </div>
+
+                                <div class="contact-feature">
+                                    <div class="icon-btn">
+                                        <i class="fa-solid fa-envelope"></i>
+                                    </div>
+                                    <div class="media-body">
+                                        <p class="contact-feature_label">Email</p>
+                                        <a href="mailto:at@at.buxdu.uz"
+                                            class="contact-feature_link">sarodrdev02@gmail.com</a>
+                                    </div>
+                                </div>
+                                <div class="contact-feature">
+                                    <div class="icon-btn">
+                                        <i class="fa-solid fa-location-dot"></i>
+                                    </div>
+                                    <div class="media-body">
+                                        <p class="contact-feature_label">Manzil</p>
+                                        <a href="contact/index.html" class="contact-feature_link">Sirdaryo viloyati
+                                            Boyovut 1- son Politexnikumi</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="copyright-wrap bg-theme">
+            <div class="container">
+                <div class="row justify-content-between align-items-center">
+                    <div class="col-lg-6">
+                        <p class="copyright-text">Mualliflik huquqi <i class="fal fa-copyright"></i> 2023 <a
+                                href="/contact/">Boyovut tuman 1- son Politexnikumi</a>. Barcha huquqlar
+                            himoyalangan.
+                        </p>
+                    </div>
+                    <div class="col-lg-6 text-end d-none d-lg-block">
+                        <div class="footer-links">
+                            <ul>
+                                <li><a href="./tuzilma.pdf">Tuzilma</a></li>
+                                <li><a href="./contact.html">Bog'lanish</a></li>
+                                <li><a href="#">Sirdaryo viloyati Boyovut 1- son Politexnikum rasmiy web sayt</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!--********************************
+        Code End  Here 
+******************************** -->
+
+    <!-- Scroll To Top -->
+    <div class="scroll-top">
+        <svg class="progress-circle svg-content" width="100%" height="100%" viewBox="-1 -1 102 102">
+            <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98"
+                style="transition: stroke-dashoffset 10ms linear 0s; stroke-dasharray: 307.919, 307.919; stroke-dashoffset: 307.919;">
+            </path>
+        </svg>
+    </div>
+
+    <!--==============================
+All Js File
+============================== -->
+    <!-- Jquery -->
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <!-- Slick Slider -->
+    <script src="js/slick.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="js/bootstrap.min.js"></script>
+    <!-- Magnific Popup -->
+    <script src="js/jquery.magnific-popup.min.js"></script>
+    <!-- Counter Up -->
+    <script src="js/jquery.counterup.min.js"></script>
+    <!-- Circle Progress -->
+    <script src="js/circle-progress.js"></script>
+    <!-- Range Slider -->
+    <script src="js/jquery-ui.min.js"></script>
+    <!-- Isotope Filter -->
+    <script src="js/imagesloaded.pkgd.min.js"></script>
+    <script src="js/isotope.pkgd.min.js"></script>
+    <!-- Tilt JS -->
+    <script src="js/tilt.jquery.min.js"></script>
+    <!-- Particles JS -->
+    <script src="js/particles.min.js"></script>
+
+
+    <script src="js/particles-config.js"></script>
+    <!-- Main Js File -->
+    <script src="js/main.js"></script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
