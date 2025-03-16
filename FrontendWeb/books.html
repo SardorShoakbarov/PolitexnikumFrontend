@@ -119,7 +119,7 @@
                     <li class="nav-item">
                         <button class=" oqilabutton btn-primary">
                             <a class="nav-link text-white" href="./OqilaAI.html">
-                                OQILA <i class="fa-solid fa-robot"></i>
+                                OQILA AI <i class="fa-solid fa-robot"></i>
                             </a>
                         </button>
                     </li>
@@ -130,7 +130,33 @@
 
     <div class="container mt-5">
         <h1 class="text-center mb-4">Kitoblar Roʻyxati</h1>
-        <div id="books-container" class="row"></div>
+        <style>
+.oqilasort{
+    width: 200px;
+    margin-left: 20px;
+border: none;
+
+text-align: center;
+}
+.oqilasort a{
+    font-size: 12px;
+    display: flex;
+justify-content: center;
+    align-items: center;
+    
+}
+.oqilasort a i{
+    margin-left: 10px;
+    font-size: 20px;
+}
+        </style>
+        <button class=" oqilasort btn-primary">
+            <a class="nav-link" href="#" onclick="showTopBooks()">Oqila AI tavsiya qiladi  <i class="fa fa-robot" ></i></a>
+
+        </button>
+        
+
+      <div id="books-container" class="row"></div>
 
         <nav class="mt-4">
             <ul class="pagination justify-content-center">
@@ -143,11 +169,10 @@
             </ul>
         </nav>
     </div>
-
     <script>
         const proxyURL = 'https://api.allorigins.win/raw?url=';
         const baseTargetURL = 'https://mykitob.uz';
-        const pages = ['', '/page/2/', '/page/3/','/page/4/','/page/5/'];
+        const pages = ['', '/page/2/', '/page/3/', '/page/4/', '/page/5/'];
 
         async function scrapeBooks(pageIndex) {
             const booksContainer = document.getElementById("books-container");
@@ -171,11 +196,12 @@
                     const bookLink = element.querySelector('.title a')?.getAttribute('href');
                     const fullBookLink = bookLink ? new URL(bookLink, baseTargetURL).href : "#";
 
-                    let bookData = { title, author, imgSrc, fullBookLink, downloadLink: "No download link" };
+                    let bookData = { title, author, imgSrc, fullBookLink, downloadLink: "No download link", kitobInfo: [] };
 
                     if (fullBookLink !== "#") {
-                        bookPromises.push(fetchDownloadLink(fullBookLink).then(downloadLink => {
+                        bookPromises.push(fetchBookDetails(fullBookLink).then(({ downloadLink, kitobInfo }) => {
                             bookData.downloadLink = downloadLink;
+                            bookData.kitobInfo = kitobInfo;
                             return bookData;
                         }));
                     } else {
@@ -186,6 +212,7 @@
                 const fetchedBooks = await Promise.all(bookPromises);
                 books = books.concat(fetchedBooks);
                 displayBooks(books);
+                console.log(books);
 
             } catch (error) {
                 console.error('Xatolik yuz berdi:', error);
@@ -193,17 +220,27 @@
             }
         }
 
-        async function fetchDownloadLink(bookURL) {
+        async function fetchBookDetails(bookURL) {
             try {
                 const response = await fetch(proxyURL + encodeURIComponent(bookURL));
                 const html = await response.text();
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(html, "text/html");
+
                 const linkElement = doc.querySelector('.book_download a');
-                return linkElement ? linkElement.getAttribute('href') : "No download link";
+                const downloadLink = linkElement ? linkElement.getAttribute('href') : "No download link";
+
+                const infoElements = doc.querySelectorAll('.my_book_info p');
+                let kitobInfo = [];
+                if (infoElements.length >= 3) {
+                    kitobInfo.push(infoElements[1]?.innerText.trim() || "Ma'lumot yo'q");
+                    kitobInfo.push(infoElements[2]?.innerText.trim() || "Ma'lumot yo'q");
+                }
+
+                return { downloadLink, kitobInfo };
             } catch (error) {
                 console.error('Download sahifasida xatolik yuz berdi:', error);
-                return "No download link";
+                return { downloadLink: "No download link", kitobInfo: [] };
             }
         }
 
@@ -218,6 +255,7 @@
                             <div class="card-body">
                                 <h5 class="card-title">${book.title}</h5>
                                 <p class="card-text">Muallif: ${book.author}</p>
+                                <p class="card-text">${book.kitobInfo[0] || "Yo'q"}</p>
                                 <a href="${book.downloadLink}" class="btn btn-primary" target="_blank">Yuklab olish</a>
                             </div>
                         </div>
@@ -226,10 +264,65 @@
             });
         }
 
+        function topBooks() {
+            return [
+                {
+                    title: "Odamiylik Mulki",
+                    author: "Toxir Malik",
+                    imgSrc: "https://mykitob.uz/wp-content/uploads/2024/03/toxir-malik-odamiylik-mulki-225x300.jpg",
+                    fullBookLink: "https://mykitob.uz/badiiy-kitoblar/toxir-malik-odamiylik-mulki/",
+                    downloadLink: "https://mykitob.uz/download/326/?tmstv=1742117293",
+                    kitobInfo: ["Diniy-falsafiy", "O'zbek adabiyoti"]
+                },
+                {
+                    title: "Murdalar gapirmaydilar",
+                    author: "Tohir Malik",
+                    imgSrc: "https://mykitob.uz/wp-content/uploads/2024/03/tohir-malik-murdalar-gapirmaydilarqissa-225x300.jpg",
+                    fullBookLink: "https://mykitob.uz/badiiy-kitoblar/tohir-malik-murdalar-gapirmaydilar/",
+                    downloadLink: "https://mykitob.uz/download/328/?tmstv=1742117294",
+                    kitobInfo: ["Qissa", "Detektiv"]
+                },
+                {
+                    title: "Hamlet",
+                    author: "Vilyam Shekspir",
+                    imgSrc: "https://mykitob.uz/wp-content/uploads/2024/03/vilyam-shekspir-hamlettragediya-225x300.jpg",
+                    fullBookLink: "https://mykitob.uz/badiiy-kitoblar/vilyam-shekspir-hamlet/",
+                    downloadLink: "https://mykitob.uz/download/324/?tmstv=1742117090",
+                    kitobInfo: ["Tragediya", "Ingliz adabiyoti"]
+                },
+                {
+                    title: "Navoiy",
+                    author: "Oybek",
+                    imgSrc: "https://mykitob.uz/wp-content/uploads/2024/03/oybek-navoiyroman-225x300.jpg",
+                    fullBookLink: "https://mykitob.uz/badiiy-kitoblar/oybek-navoiy/",
+                    downloadLink: "https://mykitob.uz/download/342/?tmstv=1742117089",
+                    kitobInfo: ["Tarixiy roman", "O'zbek adabiyoti"]
+                },
+                {
+                    title: "Qizil va qora",
+                    author: "Stendal",
+                    imgSrc: "https://mykitob.uz/wp-content/uploads/2024/03/stendal-qizil-va-qoraroman-225x300.jpg",
+                    fullBookLink: "https://mykitob.uz/badiiy-kitoblar/stendal-qizil-va-qora/",
+                    downloadLink: "https://mykitob.uz/download/332/?tmstv=1742117091",
+                    kitobInfo: ["Psixologik roman", "Fransuz adabiyoti"]
+                },
+
+            ];
+        }
+
+        function showTopBooks() {
+            const booksContainer = document.getElementById("books-container");
+            booksContainer.innerHTML = "<p class='text-center'>Tavsiya qilingan kitoblar...</p>";
+
+            const recommendedBooks = topBooks();
+            displayBooks(recommendedBooks);
+        }
+
         // Sahifani yuklaganda birinchi sahifani ko‘rsatish
         scrapeBooks(0);
     </script>
-    <footer class="footer-wrapper footer-layout2" >
+
+    <footer class="footer-wrapper footer-layout2">
         <div class="widget-area">
             <div class="container">
                 <div class="row justify-content-between">
