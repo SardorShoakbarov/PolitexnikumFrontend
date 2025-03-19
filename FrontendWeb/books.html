@@ -165,7 +165,7 @@ justify-content: center;
         </button>
         
 
-      <div id="books-container" class="row"></div>
+        <div id="books-container" class="row"></div>
 
         <nav class="mt-4">
             <ul class="pagination justify-content-center">
@@ -174,162 +174,57 @@ justify-content: center;
                 <li class="page-item"><a class="page-link" href="#" onclick="scrapeBooks(2)">3</a></li>
                 <li class="page-item"><a class="page-link" href="#" onclick="scrapeBooks(3)">4</a></li>
                 <li class="page-item"><a class="page-link" href="#" onclick="scrapeBooks(4)">5</a></li>
-
             </ul>
         </nav>
     </div>
-    <script>
-        const proxyURL = 'https://api.allorigins.win/raw?url=';
-        const baseTargetURL = 'https://mykitob.uz';
-        const pages = ['', '/page/2/', '/page/3/', '/page/4/', '/page/5/'];
+<script>
+     async function scrapeBooks(page) {
+        try {
+            const response = await fetch("https://politexnikum-backend.onrender.com/books");
+            if (!response.ok) throw new Error("Serverdan noto‘g‘ri javob keldi");
 
-        async function scrapeBooks(pageIndex) {
-            const booksContainer = document.getElementById("books-container");
-            booksContainer.innerHTML = "<p class='text-center'>Yuklanmoqda...</p>";
-            let books = [];
-            try {
-                const targetURL = baseTargetURL + pages[pageIndex];
-                const response = await fetch(proxyURL + encodeURIComponent(targetURL));
-                const html = await response.text();
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, "text/html");
-
-                const bookElements = doc.querySelectorAll('.bs-blog-post');
-                let bookPromises = [];
-
-                for (const element of bookElements) {
-                    const title = element.querySelector('.title a')?.innerText.trim() || "Noma'lum";
-                    const author = element.querySelector('.book_author a')?.innerText.trim() || "Noma'lum";
-                    const bgImageStyle = element.querySelector('.bs-blog-thumb')?.style.backgroundImage;
-                    const imgSrc = bgImageStyle ? bgImageStyle.match(/url\(["']?(.*?)["']?\)/)[1] : "https://via.placeholder.com/150";
-                    const bookLink = element.querySelector('.title a')?.getAttribute('href');
-                    const fullBookLink = bookLink ? new URL(bookLink, baseTargetURL).href : "#";
-
-                    let bookData = { title, author, imgSrc, fullBookLink, downloadLink: "No download link", kitobInfo: [] };
-
-                    if (fullBookLink !== "#") {
-                        bookPromises.push(fetchBookDetails(fullBookLink).then(({ downloadLink, kitobInfo }) => {
-                            bookData.downloadLink = downloadLink;
-                            bookData.kitobInfo = kitobInfo;
-                            return bookData;
-                        }));
-                    } else {
-                        books.push(bookData);
-                    }
-                }
-
-                const fetchedBooks = await Promise.all(bookPromises);
-                books = books.concat(fetchedBooks);
-                displayBooks(books);
-                console.log(books);
-
-            } catch (error) {
-                console.error('Xatolik yuz berdi:', error);
-                booksContainer.innerHTML = "<p class='text-danger text-center'>Xatolik yuz berdi</p>";
-            }
-        }
-
-        async function fetchBookDetails(bookURL) {
-            try {
-                const response = await fetch(proxyURL + encodeURIComponent(bookURL));
-                const html = await response.text();
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, "text/html");
-
-                const linkElement = doc.querySelector('.book_download a');
-                const downloadLink = linkElement ? linkElement.getAttribute('href') : "No download link";
-
-                const infoElements = doc.querySelectorAll('.my_book_info p');
-                let kitobInfo = [];
-                if (infoElements.length >= 3) {
-                    kitobInfo.push(infoElements[1]?.innerText.trim() || "Ma'lumot yo'q");
-                    kitobInfo.push(infoElements[2]?.innerText.trim() || "Ma'lumot yo'q");
-                }
-
-                return { downloadLink, kitobInfo };
-            } catch (error) {
-                console.error('Download sahifasida xatolik yuz berdi:', error);
-                return { downloadLink: "No download link", kitobInfo: [] };
-            }
-        }
-
-        function displayBooks(books) {
+            const books = await response.json();
             const booksContainer = document.getElementById("books-container");
             booksContainer.innerHTML = "";
-            books.forEach(book => {
-                booksContainer.innerHTML += `
-                    <div class="col-md-4 mb-4">
+
+            const start = page * 10; // Har sahifada 10 ta kitob chiqadi
+            const end = start + 10;
+            const paginatedBooks = books.slice(start, end);
+
+            paginatedBooks.forEach(book => {
+                const bookElement = document.createElement("div");
+                console.log(book);
+                
+                bookElement.className = "col-md-4 mb-3";
+                
+                    
+                bookElement.innerHTML = `
+                
+                      <div class="col-md-4 mb-4 w-100">
                         <div class="card book-card h-100">
                             <img src="${book.imgSrc}" class="card-img-topBook" alt="Kitob rasmi">
                             <div class="card-body">
                                 <h5 class="card-title">${book.title}</h5>
                                 <p class="card-text">Muallif: ${book.author}</p>
-                                <p class="card-text">${book.kitobInfo[0] || "Yo'q"}</p>
+                                <p class="card-text">${book.title || "Yo'q"}</p>
                                 <a href="${book.downloadLink}" class="btn btn-primary" target="_blank">Yuklab olish</a>
                             </div>
                         </div>
                     </div>
+                    
                 `;
+                booksContainer.appendChild(bookElement);
             });
+
+        } catch (error) {
+            console.error("Xatolik yuz berdi:", error);
         }
+    }
 
-        function topBooks() {
-            return [
-                {
-                    title: "Odamiylik Mulki",
-                    author: "Toxir Malik",
-                    imgSrc: "https://mykitob.uz/wp-content/uploads/2024/03/toxir-malik-odamiylik-mulki-225x300.jpg",
-                    fullBookLink: "https://mykitob.uz/badiiy-kitoblar/toxir-malik-odamiylik-mulki/",
-                    downloadLink: "https://mykitob.uz/download/326/?tmstv=1742117293",
-                    kitobInfo: ["Diniy-falsafiy", "O'zbek adabiyoti"]
-                },
-                {
-                    title: "Murdalar gapirmaydilar",
-                    author: "Tohir Malik",
-                    imgSrc: "https://mykitob.uz/wp-content/uploads/2024/03/tohir-malik-murdalar-gapirmaydilarqissa-225x300.jpg",
-                    fullBookLink: "https://mykitob.uz/badiiy-kitoblar/tohir-malik-murdalar-gapirmaydilar/",
-                    downloadLink: "https://mykitob.uz/download/328/?tmstv=1742117294",
-                    kitobInfo: ["Qissa", "Detektiv"]
-                },
-                {
-                    title: "Hamlet",
-                    author: "Vilyam Shekspir",
-                    imgSrc: "https://mykitob.uz/wp-content/uploads/2024/03/vilyam-shekspir-hamlettragediya-225x300.jpg",
-                    fullBookLink: "https://mykitob.uz/badiiy-kitoblar/vilyam-shekspir-hamlet/",
-                    downloadLink: "https://mykitob.uz/download/324/?tmstv=1742117090",
-                    kitobInfo: ["Tragediya", "Ingliz adabiyoti"]
-                },
-                {
-                    title: "Navoiy",
-                    author: "Oybek",
-                    imgSrc: "https://mykitob.uz/wp-content/uploads/2024/03/oybek-navoiyroman-225x300.jpg",
-                    fullBookLink: "https://mykitob.uz/badiiy-kitoblar/oybek-navoiy/",
-                    downloadLink: "https://mykitob.uz/download/342/?tmstv=1742117089",
-                    kitobInfo: ["Tarixiy roman", "O'zbek adabiyoti"]
-                },
-                {
-                    title: "Qizil va qora",
-                    author: "Stendal",
-                    imgSrc: "https://mykitob.uz/wp-content/uploads/2024/03/stendal-qizil-va-qoraroman-225x300.jpg",
-                    fullBookLink: "https://mykitob.uz/badiiy-kitoblar/stendal-qizil-va-qora/",
-                    downloadLink: "https://mykitob.uz/download/332/?tmstv=1742117091",
-                    kitobInfo: ["Psixologik roman", "Fransuz adabiyoti"]
-                },
-
-            ];
-        }
-
-        function showTopBooks() {
-            const booksContainer = document.getElementById("books-container");
-            booksContainer.innerHTML = "<p class='text-center'>Tavsiya qilingan kitoblar...</p>";
-
-            const recommendedBooks = topBooks();
-            displayBooks(recommendedBooks);
-        }
-
-        // Sahifani yuklaganda birinchi sahifani ko‘rsatish
-        scrapeBooks(0);
-    </script>
+    // Sahifa yuklanganda birinchi sahifadagi kitoblarni yuklash
+    document.addEventListener("DOMContentLoaded", () => scrapeBooks(0));
+</script>
+      
 
     <footer class="footer-wrapper footer-layout2">
         <div class="widget-area">
