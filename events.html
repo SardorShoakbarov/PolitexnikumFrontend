@@ -286,11 +286,17 @@ document.addEventListener("DOMContentLoaded", async () => {
             <div class="container">
                 <div class="row justify-content-between align-items-center">
                     <div class="col-lg-6">
-                        <p class="copyright-text">Mualliflik huquqi <i class="fal fa-copyright"></i> 2025 <a
-                                href="/">Sirdaryo viloyati Boyovuti 1-son politexnikumi</a>. Barcha huquqlar
+                        <p class="copyright-text">
+                            <button type="button" class="btn  btn-outline-light" data-bs-toggle="modal"
+                                data-bs-target="#myModal">
+                                Mualiflik
+                            </button>
+                            huquqi <i class="fal fa-copyright"></i> 2025 Sirdaryo viloyati Boyovuti 1-son politexnikumi.
+                            Barcha huquqlar
                             himoyalangan.
                         </p>
                     </div>
+
                     <div class="col-lg-6 text-end d-none d-lg-block">
                         <div class="footer-links">
                             <ul>
@@ -305,9 +311,66 @@ document.addEventListener("DOMContentLoaded", async () => {
         </div>
     </footer>
 
-    <!--********************************
-			Code End  Here 
-	******************************** -->
+
+    <!-- Modal oynasi -->
+    <style>
+        .author-info {
+            font-weight: bold;
+            color: #333;
+            margin-top: 10px;
+        }
+
+        .author-role {
+            font-style: italic;
+            color: #666;
+        }
+    </style>
+    <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Veb-sayt Mualliflari</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Yopish"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="author-info">IGAMBERDIEV AKMAL KUYZAYDAROVICH</p>
+                    <p class="author-role">Boyovut tuman 1-son politeknikumi Informatika va axborot texnologiyalari fani
+                        o‘qituvchisi</p>
+
+                    <hr>
+
+                    <p class="author-info">SHOAKBAROV SARDORJON SHOSULTON O‘G‘LI</p>
+                    <p class="author-role">Boyovut tuman 1-son politeknikumi ADTS-2-23 guruhi o‘quvchisi</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Yopish</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Veb-sayt Mualliflari</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Yopish"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="author-info">IGAMBERDIEV AKMAL KUYZAYDAROVICH</p>
+                    <p class="author-role">Boyovut tuman 1-son politeknikumi Informatika va axborot texnologiyalari fani
+                        o‘qituvchisi</p>
+
+                    <hr>
+
+                    <p class="author-info">SHOAKBAROV SARDORJON SHOSULTON O‘G‘LI</p>
+                    <p class="author-role">Boyovut tuman 1-son politeknikumi ADTS-2-23 guruhi o‘quvchisi</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Yopish</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Scroll To Top -->
     <div class="scroll-top">
